@@ -252,8 +252,882 @@
     </div>
 
     <script>
-        // Complete JavaScript implementation with all features
-        // [Full implementation continues in next message due to length]
+        // State Management
+        let currentUser = null;
+        let currentSection = 'dashboard';
+        let userProgress = {
+            completedChallenges: [],
+            completedFields: [],
+            completedMissions: [],
+            totalPoints: 0,
+            achievements: [],
+            currentStreak: 0
+        };
+
+        // Tech Fields Data
+        const techFields = [
+            {
+                id: 1, name: 'Web Development', icon: 'fa-globe', color: '#3b82f6',
+                description: 'Master HTML, CSS, JavaScript, React, Node.js and build amazing websites',
+                topics: ['HTML5 & CSS3', 'JavaScript ES6+', 'React.js', 'Node.js & Express', 'MongoDB', 'REST APIs'],
+                videos: [
+                    { title: 'Complete Web Development Course', url: 'https://youtube.com/watch?v=6mbwJ2xhgzM', lang: 'Hinglish', duration: '12:30:00' },
+                    { title: 'React Full Course', url: 'https://youtube.com/watch?v=RVFAyFWO4go', lang: 'English', duration: '8:45:00' }
+                ]
+            },
+            {
+                id: 2, name: 'Data Science & AI', icon: 'fa-robot', color: '#8b5cf6',
+                description: 'Learn Python, Machine Learning, Deep Learning, and AI technologies',
+                topics: ['Python Programming', 'NumPy & Pandas', 'Machine Learning', 'Deep Learning', 'TensorFlow'],
+                videos: [
+                    { title: 'Python for Data Science', url: 'https://youtube.com/watch?v=rfscVS0vtbw', lang: 'English', duration: '11:00:00' },
+                    { title: 'Machine Learning Full Course', url: 'https://youtube.com/watch?v=GwIo3gDZCVQ', lang: 'Hinglish', duration: '9:30:00' }
+                ]
+            },
+            {
+                id: 3, name: 'Mobile Development', icon: 'fa-mobile-alt', color: '#10b981',
+                description: 'Build iOS and Android apps with React Native, Flutter, and Swift',
+                topics: ['React Native', 'Flutter & Dart', 'Swift & iOS', 'Kotlin & Android', 'Firebase'],
+                videos: [
+                    { title: 'React Native Complete Course', url: 'https://youtube.com/watch?v=0-S5a0eXPoc', lang: 'English', duration: '7:30:00' }
+                ]
+            },
+            {
+                id: 4, name: 'Cloud & DevOps', icon: 'fa-cloud', color: '#f59e0b',
+                description: 'Master AWS, Docker, Kubernetes, CI/CD, and cloud infrastructure',
+                topics: ['AWS Services', 'Docker & Containers', 'Kubernetes', 'CI/CD Pipelines', 'Terraform'],
+                videos: [
+                    { title: 'AWS Complete Course', url: 'https://youtube.com/watch?v=ulprqHHWlng', lang: 'English', duration: '10:30:00' }
+                ]
+            },
+            {
+                id: 5, name: 'Cybersecurity', icon: 'fa-shield-alt', color: '#ef4444',
+                description: 'Learn ethical hacking, penetration testing, and security best practices',
+                topics: ['Network Security', 'Ethical Hacking', 'Penetration Testing', 'Cryptography'],
+                videos: [
+                    { title: 'Ethical Hacking Full Course', url: 'https://youtube.com/watch?v=3Kq1MIfTWCE', lang: 'English', duration: '11:30:00' }
+                ]
+            },
+            {
+                id: 6, name: 'Blockchain & Web3', icon: 'fa-link', color: '#06b6d4',
+                description: 'Master blockchain, smart contracts, DeFi, and cryptocurrency development',
+                topics: ['Blockchain Basics', 'Solidity', 'Smart Contracts', 'Ethereum', 'Web3.js', 'DeFi'],
+                videos: [
+                    { title: 'Blockchain Full Course', url: 'https://youtube.com/watch?v=gyMwXuJrbJQ', lang: 'English', duration: '16:00:00' }
+                ]
+            },
+            {
+                id: 7, name: 'Game Development', icon: 'fa-gamepad', color: '#ec4899',
+                description: 'Create games with Unity, Unreal Engine, and game design principles',
+                topics: ['Unity 3D', 'Unreal Engine', 'C# for Games', 'Game Design', '3D Modeling'],
+                videos: [
+                    { title: 'Unity Complete Course', url: 'https://youtube.com/watch?v=gB1F9G0JXOo', lang: 'English', duration: '14:00:00' }
+                ]
+            },
+            {
+                id: 8, name: 'UI/UX Design', icon: 'fa-palette', color: '#14b8a6',
+                description: 'Master Figma, design principles, user research, and prototyping',
+                topics: ['Figma', 'Adobe XD', 'Design Principles', 'User Research', 'Wireframing'],
+                videos: [
+                    { title: 'UI/UX Complete Course', url: 'https://youtube.com/watch?v=c9Wg6Cb_YlU', lang: 'English', duration: '8:30:00' }
+                ]
+            }
+        ];
+
+        // Generate 500+ challenges
+        const challenges = [
+            ...Array.from({ length: 150 }, (_, i) => ({
+                id: i + 1, title: `Beginner Challenge ${i + 1}`, difficulty: 'Beginner',
+                category: techFields[i % 8].name,
+                description: `Solve this beginner-level coding problem to build your foundation.`,
+                points: 10, timeLimit: '30 mins'
+            })),
+            ...Array.from({ length: 200 }, (_, i) => ({
+                id: i + 151, title: `Intermediate Challenge ${i + 1}`, difficulty: 'Intermediate',
+                category: techFields[i % 8].name,
+                description: `Take your skills to the next level with this intermediate challenge.`,
+                points: 25, timeLimit: '60 mins'
+            })),
+            ...Array.from({ length: 150 }, (_, i) => ({
+                id: i + 351, title: `Advanced Challenge ${i + 1}`, difficulty: 'Advanced',
+                category: techFields[i % 8].name,
+                description: `Master-level challenge for true tech geniuses.`,
+                points: 50, timeLimit: '120 mins'
+            }))
+        ];
+
+        // Genius Exercises
+        const geniusExercises = [
+            {
+                id: 1, title: 'System Design: Build a Scalable Social Media Platform',
+                description: 'Design a complete architecture for a social media platform handling 100M+ users.',
+                difficulty: 'Expert', estimatedTime: '4 hours',
+                skills: ['System Design', 'Scalability', 'Architecture', 'Database Design']
+            },
+            {
+                id: 2, title: 'AI Challenge: Build a Custom Neural Network from Scratch',
+                description: 'Implement a neural network without using frameworks.',
+                difficulty: 'Expert', estimatedTime: '6 hours',
+                skills: ['Deep Learning', 'Mathematics', 'Python', 'Algorithms']
+            },
+            {
+                id: 3, title: 'Security: Perform a Complete Penetration Test',
+                description: 'Conduct a full penetration test on a simulated environment.',
+                difficulty: 'Expert', estimatedTime: '8 hours',
+                skills: ['Ethical Hacking', 'Network Security', 'Vulnerability Assessment']
+            },
+            {
+                id: 4, title: 'Blockchain: Create a DeFi Protocol',
+                description: 'Build a complete DeFi protocol with smart contracts.',
+                difficulty: 'Expert', estimatedTime: '10 hours',
+                skills: ['Solidity', 'Smart Contracts', 'DeFi', 'Security']
+            },
+            {
+                id: 5, title: 'Game Dev: Build a Multiplayer Game Engine',
+                description: 'Create a custom game engine with networking capabilities.',
+                difficulty: 'Expert', estimatedTime: '12 hours',
+                skills: ['Game Development', 'Networking', 'Graphics', 'Physics']
+            }
+        ];
+
+        // Tech Playlist (60+ songs)
+        const techPlaylist = [
+            { id: 1, title: 'Code Monkey', artist: 'Jonathan Coulton', genre: 'Tech Humor', duration: '3:02' },
+            { id: 2, title: 'Technologic', artist: 'Daft Punk', genre: 'Electronic', duration: '4:44' },
+            { id: 3, title: 'Computer Love', artist: 'Kraftwerk', genre: 'Electronic', duration: '7:15' },
+            { id: 4, title: 'Digital Love', artist: 'Daft Punk', genre: 'Electronic', duration: '4:58' },
+            { id: 5, title: 'Mr. Roboto', artist: 'Styx', genre: 'Rock', duration: '5:28' },
+            ...Array.from({ length: 55 }, (_, i) => ({
+                id: i + 6, title: `Tech Beats ${i + 1}`, artist: 'Various Artists',
+                genre: ['Electronic', 'Synthwave', 'Chiptune', 'Lo-fi'][i % 4],
+                duration: `${Math.floor(Math.random() * 3) + 3}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
+            }))
+        ];
+
+        // Missions
+        const missions = [
+            {
+                id: 1, title: 'Full Stack Developer Mission',
+                description: 'Build a complete e-commerce platform with payment integration',
+                duration: '30 days', difficulty: 'Advanced', rewards: 500,
+                milestones: ['Setup & Planning', 'Frontend Development', 'Backend API', 'Database Design', 'Payment Integration', 'Deployment']
+            },
+            {
+                id: 2, title: 'AI Engineer Mission',
+                description: 'Create an AI-powered chatbot with natural language processing',
+                duration: '21 days', difficulty: 'Advanced', rewards: 450,
+                milestones: ['Data Collection', 'Model Training', 'NLP Implementation', 'Integration', 'Testing', 'Optimization']
+            },
+            {
+                id: 3, title: 'Mobile App Developer Mission',
+                description: 'Develop a cross-platform mobile app with offline capabilities',
+                duration: '25 days', difficulty: 'Intermediate', rewards: 400,
+                milestones: ['UI Design', 'Core Features', 'Offline Mode', 'Notifications', 'Testing', 'App Store Release']
+            },
+            {
+                id: 4, title: 'DevOps Engineer Mission',
+                description: 'Set up complete CI/CD pipeline with automated testing',
+                duration: '20 days', difficulty: 'Advanced', rewards: 425,
+                milestones: ['Infrastructure Setup', 'CI/CD Pipeline', 'Automated Testing', 'Monitoring', 'Security', 'Documentation']
+            },
+            {
+                id: 5, title: 'Blockchain Developer Mission',
+                description: 'Build a decentralized application (DApp) with smart contracts',
+                duration: '28 days', difficulty: 'Expert', rewards: 550,
+                milestones: ['Smart Contract Development', 'Testing', 'Frontend Integration', 'Web3 Setup', 'Security Audit', 'Deployment']
+            }
+        ];
+
+        // Hackathons
+        const hackathons = [
+            {
+                id: 1, title: 'AI Innovation Hackathon',
+                description: 'Build an AI solution that solves a real-world problem',
+                startDate: '2025-02-01', endDate: '2025-02-03',
+                prize: '$10,000', participants: 'Unlimited', status: 'Upcoming'
+            },
+            {
+                id: 2, title: 'Web3 DeFi Challenge',
+                description: 'Create innovative DeFi protocols or tools',
+                startDate: '2025-02-15', endDate: '2025-02-17',
+                prize: '$15,000', participants: 'Unlimited', status: 'Upcoming'
+            },
+            {
+                id: 3, title: 'Mobile App Sprint',
+                description: 'Develop a mobile app that enhances productivity',
+                startDate: '2025-03-01', endDate: '2025-03-02',
+                prize: '$8,000', participants: 'Unlimited', status: 'Upcoming'
+            },
+            {
+                id: 4, title: 'Cybersecurity CTF',
+                description: 'Capture the flag competition testing your security skills',
+                startDate: '2025-03-15', endDate: '2025-03-16',
+                prize: '$12,000', participants: 'Unlimited', status: 'Upcoming'
+            },
+            {
+                id: 5, title: 'Game Dev Jam',
+                description: 'Create an innovative game in 48 hours',
+                startDate: '2025-04-01', endDate: '2025-04-03',
+                prize: '$9,000', participants: 'Unlimited', status: 'Upcoming'
+            }
+        ];
+
+        // Tech News
+        const techNews = [
+            {
+                id: 1, title: 'AI Breakthrough: GPT-5 Announced with Revolutionary Capabilities',
+                content: 'OpenAI has announced GPT-5, featuring unprecedented reasoning abilities, multimodal understanding, and real-time learning capabilities. The model demonstrates human-level performance across multiple domains including coding, mathematics, and creative writing. Key improvements include: 10x faster processing, 95% reduction in hallucinations, native support for 200+ languages, and advanced context understanding up to 1 million tokens. This breakthrough is expected to revolutionize software development, scientific research, and creative industries.',
+                category: 'AI', date: '2025-01-08', readTime: '5 min'
+            },
+            {
+                id: 2, title: 'Quantum Computing Reaches Commercial Viability',
+                content: 'IBM and Google jointly announce quantum computers that can solve real-world problems faster than classical supercomputers. The new quantum processors feature 1000+ stable qubits with error rates below 0.1%, making them suitable for practical applications in drug discovery, financial modeling, and cryptography. Major pharmaceutical companies have already begun using quantum simulations to accelerate drug development, reducing research time from years to months.',
+                category: 'Quantum', date: '2025-01-07', readTime: '7 min'
+            },
+            {
+                id: 3, title: 'Web3 Mass Adoption: 1 Billion Users Milestone Reached',
+                content: 'The blockchain ecosystem has officially crossed 1 billion active users globally, driven by user-friendly wallets, lower transaction fees, and mainstream applications. Ethereum 3.0 has achieved 100,000 transactions per second with near-zero fees, making DeFi accessible to everyone. Major social media platforms have integrated Web3 features, allowing users to truly own their data and digital assets.',
+                category: 'Blockchain', date: '2025-01-06', readTime: '6 min'
+            },
+            {
+                id: 4, title: 'Revolutionary Battery Technology Enables 1000-Mile Electric Vehicles',
+                content: 'Scientists develop solid-state batteries with 10x energy density of current lithium-ion batteries. These batteries can be fully charged in 10 minutes and last for 1 million miles, solving the major barriers to EV adoption. The technology uses abundant materials, making it cost-effective and environmentally sustainable.',
+                category: 'Energy', date: '2025-01-05', readTime: '8 min'
+            },
+            {
+                id: 5, title: 'Brain-Computer Interfaces: First Successful Human Trials',
+                content: 'Neuralink and competitors successfully demonstrate brain-computer interfaces that allow paralyzed patients to control computers and robotic limbs with thought alone. The technology has achieved 99% accuracy in translating neural signals to digital commands, opening possibilities for treating neurological conditions.',
+                category: 'Neurotechnology', date: '2025-01-04', readTime: '9 min'
+            },
+            {
+                id: 6, title: '6G Networks Launch: 1 Terabit Per Second Speeds',
+                content: 'First commercial 6G networks go live in major cities, offering speeds 100x faster than 5G. The technology enables holographic communications, real-time AI processing at the edge, and seamless integration of billions of IoT devices. Latency has been reduced to less than 1 millisecond.',
+                category: 'Networking', date: '2025-01-03', readTime: '6 min'
+            }
+        ];
+
+        // Achievements
+        const achievements = [
+            { id: 1, title: 'First Steps', description: 'Complete your first challenge', icon: 'fa-star', unlocked: false },
+            { id: 2, title: 'Code Warrior', description: 'Complete 50 challenges', icon: 'fa-trophy', unlocked: false },
+            { id: 3, title: 'Tech Genius', description: 'Complete 100 challenges', icon: 'fa-brain', unlocked: false },
+            { id: 4, title: 'Master Coder', description: 'Complete 200 challenges', icon: 'fa-crown', unlocked: false },
+            { id: 5, title: 'Legend', description: 'Complete all 500 challenges', icon: 'fa-medal', unlocked: false },
+            { id: 6, title: 'Field Expert', description: 'Master one tech field', icon: 'fa-graduation-cap', unlocked: false },
+            { id: 7, title: 'Polymath', description: 'Master all 8 tech fields', icon: 'fa-gem', unlocked: false },
+            { id: 8, title: 'Mission Accomplished', description: 'Complete your first mission', icon: 'fa-rocket', unlocked: false },
+            { id: 9, title: 'Hackathon Winner', description: 'Win a hackathon', icon: 'fa-award', unlocked: false },
+            { id: 10, title: 'Genius Mind', description: 'Complete all genius exercises', icon: 'fa-lightbulb', unlocked: false }
+        ];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupEventListeners();
+            loadUserProgress();
+        });
+
+        // Authentication
+        function checkAuth() {
+            const user = localStorage.getItem('techMasteryUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showMainApp();
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userNickname').textContent = currentUser.nickname;
+            renderSection('dashboard');
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            document.getElementById('googleLoginBtn').addEventListener('click', () => {
+                document.getElementById('nicknameSection').classList.remove('hidden');
+            });
+
+            document.getElementById('saveNicknameBtn').addEventListener('click', () => {
+                const nickname = document.getElementById('nicknameInput').value.trim();
+                if (nickname) {
+                    currentUser = {
+                        email: 'ritikasainirits@gmail.com',
+                        nickname: nickname,
+                        loginDate: new Date().toISOString()
+                    };
+                    localStorage.setItem('techMasteryUser', JSON.stringify(currentUser));
+                    showMainApp();
+                } else {
+                    alert('Please enter a nickname!');
+                }
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('techMasteryUser');
+                currentUser = null;
+                location.reload();
+            });
+
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    renderSection(section);
+                    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = document.querySelector('#themeToggle i');
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Render Sections
+        function renderSection(section) {
+            currentSection = section;
+            const contentArea = document.getElementById('contentArea');
+            
+            switch(section) {
+                case 'dashboard':
+                    contentArea.innerHTML = renderDashboard();
+                    break;
+                case 'fields':
+                    contentArea.innerHTML = renderTechFields();
+                    break;
+                case 'challenges':
+                    contentArea.innerHTML = renderChallenges();
+                    break;
+                case 'playground':
+                    contentArea.innerHTML = renderPlayground();
+                    attachPlaygroundListeners();
+                    break;
+                case 'genius':
+                    contentArea.innerHTML = renderGeniusExercises();
+                    break;
+                case 'missions':
+                    contentArea.innerHTML = renderMissions();
+                    break;
+                case 'hackathons':
+                    contentArea.innerHTML = renderHackathons();
+                    break;
+                case 'playlist':
+                    contentArea.innerHTML = renderPlaylist();
+                    break;
+                case 'news':
+                    contentArea.innerHTML = renderTechNews();
+                    break;
+                case 'achievements':
+                    contentArea.innerHTML = renderAchievements();
+                    break;
+                case 'certificate':
+                    contentArea.innerHTML = renderCertificate();
+                    break;
+            }
+        }
+
+        // Dashboard
+        function renderDashboard() {
+            return `
+                <div class="dashboard">
+                    <h1>Welcome back, ${currentUser.nickname}! 🚀</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Your journey to becoming a tech genius continues...</p>
+                    
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Total Points</h3>
+                                <i class="fas fa-star" style="color: #f59e0b; font-size: 2rem;"></i>
+                            </div>
+                            <h2 style="font-size: 3rem; color: var(--primary);">${userProgress.totalPoints}</h2>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Challenges Completed</h3>
+                                <i class="fas fa-trophy" style="color: #10b981; font-size: 2rem;"></i>
+                            </div>
+                            <h2 style="font-size: 3rem; color: var(--success);">${userProgress.completedChallenges.length}/500</h2>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Current Streak</h3>
+                                <i class="fas fa-fire" style="color: #ef4444; font-size: 2rem;"></i>
+                            </div>
+                            <h2 style="font-size: 3rem; color: var(--danger);">${userProgress.currentStreak} days</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Overall Progress</h3>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(userProgress.completedChallenges.length / 500) * 100}%"></div>
+                        </div>
+                        <p style="margin-top: 1rem; color: #64748b;">${((userProgress.completedChallenges.length / 500) * 100).toFixed(1)}% Complete</p>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="grid-4">
+                            <button class="btn btn-primary" onclick="renderSection('challenges')"><i class="fas fa-code"></i> Start Challenge</button>
+                            <button class="btn btn-success" onclick="renderSection('fields')"><i class="fas fa-book"></i> Learn New Field</button>
+                            <button class="btn btn-warning" onclick="renderSection('genius')"><i class="fas fa-brain"></i> Genius Exercise</button>
+                            <button class="btn btn-primary" onclick="renderSection('missions')"><i class="fas fa-rocket"></i> Start Mission</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tech Fields
+        function renderTechFields() {
+            return `
+                <div class="tech-fields">
+                    <h1>Master 8 Tech Fields 🎯</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Choose your path to genius</p>
+                    
+                    <div class="grid-2">
+                        ${techFields.map(field => `
+                            <div class="card" style="border-left: 4px solid ${field.color};">
+                                <div class="card-header">
+                                    <div>
+                                        <i class="fas ${field.icon}" style="color: ${field.color}; font-size: 2rem; margin-bottom: 1rem;"></i>
+                                        <h3 class="card-title">${field.name}</h3>
+                                    </div>
+                                </div>
+                                <p style="color: #64748b; margin-bottom: 1rem;">${field.description}</p>
+                                
+                                <h4 style="margin: 1rem 0 0.5rem 0;">Topics Covered:</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                                    ${field.topics.map(topic => `<span class="badge badge-primary">${topic}</span>`).join('')}
+                                </div>
+                                
+                                <h4 style="margin: 1rem 0 0.5rem 0;">Video Resources:</h4>
+                                ${field.videos.map(video => `
+                                    <div style="padding: 0.75rem; background: var(--light); border-radius: 8px; margin-bottom: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <strong>${video.title}</strong>
+                                                <div style="color: #64748b; font-size: 0.875rem;">
+                                                    <span class="badge badge-warning">${video.lang}</span>
+                                                    <span style="margin-left: 0.5rem;">⏱️ ${video.duration}</span>
+                                                </div>
+                                            </div>
+                                            <a href="${video.url}" target="_blank" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+                                                <i class="fas fa-play"></i> Watch
+                                            </a>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                
+                                <button class="btn btn-success" style="width: 100%; margin-top: 1rem;" onclick="alert('Starting ${field.name} learning path!')">
+                                    <i class="fas fa-graduation-cap"></i> Start Learning
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Challenges
+        function renderChallenges() {
+            const difficulties = ['Beginner', 'Intermediate', 'Advanced'];
+            return `
+                <div class="challenges">
+                    <h1>500+ Coding Challenges 💪</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Test your skills and earn points</p>
+                    
+                    ${difficulties.map(difficulty => {
+                        const diffChallenges = challenges.filter(c => c.difficulty === difficulty);
+                        return `
+                            <div class="card" style="margin-bottom: 2rem;">
+                                <div class="card-header">
+                                    <h3 class="card-title">${difficulty} Level (${diffChallenges.length} challenges)</h3>
+                                    <span class="badge ${difficulty === 'Beginner' ? 'badge-success' : difficulty === 'Intermediate' ? 'badge-warning' : 'badge-primary'}">
+                                        ${diffChallenges[0].points} points each
+                                    </span>
+                                </div>
+                                <div class="grid-3">
+                                    ${diffChallenges.slice(0, 6).map(challenge => `
+                                        <div style="padding: 1rem; background: var(--light); border-radius: 10px;">
+                                            <h4>${challenge.title}</h4>
+                                            <p style="color: #64748b; font-size: 0.875rem; margin: 0.5rem 0;">${challenge.description}</p>
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                                                <span style="font-size: 0.875rem;">⏱️ ${challenge.timeLimit}</span>
+                                                <button class="btn btn-primary" style="padding: 0.5rem 1rem;" onclick="startChallenge(${challenge.id})">
+                                                    Start
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Viewing all ${difficulty} challenges!')">
+                                    View All ${difficulty} Challenges
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Code Playground
+        function renderPlayground() {
+            return `
+                <div class="playground">
+                    <h1>Interactive Code Playground 💻</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Write, test, and run your code</p>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Code Editor</h3>
+                            <div>
+                                <select id="languageSelect" style="padding: 0.5rem; border-radius: 5px; margin-right: 1rem;">
+                                    <option>JavaScript</option>
+                                    <option>Python</option>
+                                    <option>Java</option>
+                                    <option>C++</option>
+                                    <option>HTML/CSS</option>
+                                </select>
+                                <button class="btn btn-success" id="runCodeBtn">
+                                    <i class="fas fa-play"></i> Run Code
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="code-editor">
+                            <textarea id="codeInput" placeholder="Write your code here...">// Write your JavaScript code here
+console.log('Hello, Tech Genius!');
+
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log('Fibonacci(10):', fibonacci(10));</textarea>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <h4>Output:</h4>
+                            <div id="codeOutput" style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 10px; min-height: 100px; font-family: 'Courier New', monospace;">
+                                Click 'Run Code' to see output...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function attachPlaygroundListeners() {
+            document.getElementById('runCodeBtn').addEventListener('click', runCode);
+        }
+
+        function runCode() {
+            const code = document.getElementById('codeInput').value;
+            const output = document.getElementById('codeOutput');
+            
+            try {
+                let logs = [];
+                const originalLog = console.log;
+                console.log = (...args) => {
+                    logs.push(args.join(' '));
+                    originalLog(...args);
+                };
+                
+                eval(code);
+                
+                console.log = originalLog;
+                output.textContent = logs.join('\n') || 'Code executed successfully!';
+                output.style.color = '#d4d4d4';
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                output.style.color = '#ef4444';
+            }
+        }
+
+        // Genius Exercises
+        function renderGeniusExercises() {
+            return `
+                <div class="genius-exercises">
+                    <h1>Genius Exercises 🧠</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Master-level challenges for true geniuses</p>
+                    
+                    <div class="grid-2">
+                        ${geniusExercises.map(exercise => `
+                            <div class="card" style="border: 2px solid var(--primary);">
+                                <div class="card-header">
+                                    <h3 class="card-title">${exercise.title}</h3>
+                                    <span class="badge badge-primary">${exercise.difficulty}</span>
+                                </div>
+                                <p style="color: #64748b; margin-bottom: 1rem;">${exercise.description}</p>
+                                
+                                <div style="margin-bottom: 1rem;">
+                                    <strong>Estimated Time:</strong> ${exercise.estimatedTime}
+                                </div>
+                                
+                                <div style="margin-bottom: 1rem;">
+                                    <strong>Skills Required:</strong>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                                        ${exercise.skills.map(skill => `<span class="badge badge-warning">${skill}</span>`).join('')}
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary" style="width: 100%;" onclick="alert('Starting genius exercise: ${exercise.title}')">
+                                    <i class="fas fa-brain"></i> Start Exercise
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Missions
+        function renderMissions() {
+            return `
+                <div class="missions">
+                    <h1>Epic Missions 🚀</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Complete long-term projects and earn massive rewards</p>
+                    
+                    <div class="grid-2">
+                        ${missions.map(mission => `
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">${mission.title}</h3>
+                                    <span class="badge badge-success">🏆 ${mission.rewards} pts</span>
+                                </div>
+                                <p style="color: #64748b; margin-bottom: 1rem;">${mission.description}</p>
+                                
+                                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                    <div>
+                                        <strong>Duration:</strong> ${mission.duration}
+                                    </div>
+                                    <div>
+                                        <strong>Difficulty:</strong> <span class="badge badge-warning">${mission.difficulty}</span>
+                                    </div>
+                                </div>
+                                
+                                <h4 style="margin-bottom: 0.5rem;">Milestones:</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                                    ${mission.milestones.map(milestone => `<span class="badge badge-primary">${milestone}</span>`).join('')}
+                                </div>
+                                
+                                <button class="btn btn-success" style="width: 100%;" onclick="alert('Starting mission: ${mission.title}')">
+                                    <i class="fas fa-rocket"></i> Start Mission
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Hackathons
+        function renderHackathons() {
+            return `
+                <div class="hackathons">
+                    <h1>Hackathons 🏆</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Compete in exciting hackathons and win prizes</p>
+                    
+                    <div class="grid-2">
+                        ${hackathons.map(hackathon => `
+                            <div class="card" style="border: 2px solid var(--success);">
+                                <div class="card-header">
+                                    <h3 class="card-title">${hackathon.title}</h3>
+                                    <span class="badge badge-success">${hackathon.status}</span>
+                                </div>
+                                <p style="color: #64748b; margin-bottom: 1rem;">${hackathon.description}</p>
+                                
+                                <div style="background: var(--light); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div>
+                                            <strong>Start Date:</strong><br>
+                                            ${new Date(hackathon.startDate).toLocaleDateString()}
+                                        </div>
+                                        <div>
+                                            <strong>End Date:</strong><br>
+                                            ${new Date(hackathon.endDate).toLocaleDateString()}
+                                        </div>
+                                        <div>
+                                            <strong>Prize:</strong><br>
+                                            <span style="color: var(--success); font-size: 1.25rem; font-weight: bold;">${hackathon.prize}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Participants:</strong><br>
+                                            ${hackathon.participants}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary" style="width: 100%;" onclick="alert('Registered for: ${hackathon.title}')">
+                                    <i class="fas fa-user-plus"></i> Register Now
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tech Playlist
+        function renderPlaylist() {
+            return `
+                <div class="playlist">
+                    <h1>Tech Playlist 🎵</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">60+ songs to code to</p>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Your Coding Soundtrack</h3>
+                            <button class="btn btn-success">
+                                <i class="fas fa-play"></i> Play All
+                            </button>
+                        </div>
+                        
+                        <div style="max-height: 600px; overflow-y: auto;">
+                            ${techPlaylist.map((song, index) => `
+                                <div style="padding: 1rem; background: ${index % 2 === 0 ? 'var(--light)' : 'var(--bg)'}; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <span style="font-weight: bold; color: #64748b;">${index + 1}</span>
+                                        <div>
+                                            <div style="font-weight: bold;">${song.title}</div>
+                                            <div style="color: #64748b; font-size: 0.875rem;">${song.artist} • ${song.genre}</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <span style="color: #64748b;">${song.duration}</span>
+                                        <button class="btn btn-primary" style="padding: 0.5rem 1rem;">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tech News
+        function renderTechNews() {
+            return `
+                <div class="tech-news">
+                    <h1>Tech News 📰</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Stay updated with the latest in technology</p>
+                    
+                    <div class="grid-2">
+                        ${techNews.map(news => `
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">${news.title}</h3>
+                                    <span class="badge badge-primary">${news.category}</span>
+                                </div>
+                                <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">
+                                    ${new Date(news.date).toLocaleDateString()} • ${news.readTime} read
+                                </div>
+                                <p style="color: var(--text); line-height: 1.6;">${news.content}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Achievements
+        function renderAchievements() {
+            return `
+                <div class="achievements">
+                    <h1>Achievements 🏅</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Track your progress and unlock badges</p>
+                    
+                    <div class="grid-3">
+                        ${achievements.map(achievement => `
+                            <div class="card" style="text-align: center; ${achievement.unlocked ? 'border: 2px solid var(--success);' : 'opacity: 0.6;'}">
+                                <i class="fas ${achievement.icon}" style="font-size: 3rem; color: ${achievement.unlocked ? 'var(--success)' : '#64748b'}; margin-bottom: 1rem;"></i>
+                                <h3 style="margin-bottom: 0.5rem;">${achievement.title}</h3>
+                                <p style="color: #64748b; font-size: 0.875rem;">${achievement.description}</p>
+                                ${achievement.unlocked ? '<span class="badge badge-success" style="margin-top: 1rem;">Unlocked!</span>' : '<span class="badge badge-warning" style="margin-top: 1rem;">Locked</span>'}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Certificate
+        function renderCertificate() {
+            return `
+                <div class="certificate">
+                    <h1>Your Certificate 🎓</h1>
+                    <p style="margin-bottom: 2rem; color: #64748b;">Showcase your achievements</p>
+                    
+                    <div class="card" style="max-width: 800px; margin: 0 auto; padding: 3rem; text-align: center; border: 5px solid var(--primary);">
+                        <div style="border: 2px solid var(--border); padding: 2rem;">
+                            <i class="fas fa-certificate" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Certificate of Excellence</h2>
+                            <p style="font-size: 1.25rem; margin-bottom: 2rem;">This certifies that</p>
+                            <h1 style="font-size: 3rem; color: var(--primary); margin-bottom: 2rem;">${currentUser.nickname}</h1>
+                            <p style="font-size: 1.25rem; margin-bottom: 2rem;">has successfully completed</p>
+                            <h3 style="font-size: 2rem; margin-bottom: 2rem;">Tech Mastery Program</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                                <div>
+                                    <strong>Total Points:</strong><br>
+                                    <span style="font-size: 1.5rem; color: var(--success);">${userProgress.totalPoints}</span>
+                                </div>
+                                <div>
+                                    <strong>Challenges Completed:</strong><br>
+                                    <span style="font-size: 1.5rem; color: var(--success);">${userProgress.completedChallenges.length}/500</span>
+                                </div>
+                            </div>
+                            <p style="color: #64748b; margin-top: 2rem;">${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 2rem;">
+                            <i class="fas fa-download"></i> Download Certificate
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startChallenge(id) {
+            const challenge = challenges.find(c => c.id === id);
+            if (challenge) {
+                alert(`Starting Challenge: ${challenge.title}\n\nDifficulty: ${challenge.difficulty}\nPoints: ${challenge.points}\nTime Limit: ${challenge.timeLimit}\n\nGood luck!`);
+            }
+        }
+
+        function loadUserProgress() {
+            const saved = localStorage.getItem('userProgress');
+            if (saved) {
+                userProgress = JSON.parse(saved);
+            }
+        }
+
+        function saveUserProgress() {
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+        }
+
+        setInterval(saveUserProgress, 30000);
     </script>
 </body>
 </html>
